@@ -14,23 +14,20 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id/posts', (req, res) => {
   const { id } = req.params;
-
-  db('users').where({ id })
-  .then(users => {
-    const user = users[0];
-
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ message: 'Could not find user with given id.' })
-    }
+  db('posts as p')
+  .join('users as u', 'u.id', '=', 'p.user_id')
+  .where({ user_id: id })
+  .then(posts => {
+    res.status(200).json(posts)
   })
   .catch(err => {
-    res.status(500).json({ message: 'Failed to get user' });
-  });
-});
+    res.status(500).json(err)
+  })
+})
+
+module.exports = router; 	module.exports = router; 
 
 router.post('/', (req, res) => {
   const userData = req.body;
